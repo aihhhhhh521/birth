@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>0-17岁孩子养育成本地图</title>
+    <style>
+        body {
+            margin: 0;
+            font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+            background-color: #f0f0f0; /* 调整背景为浅灰色 */
+            color: #333; /* 文字颜色调整为深色 */
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+        #container {
+            width: 80%;
+            height: 80vh;
+        }
+    </style>
+    <script src="https://cdn.jsdelivr.net/npm/echarts@5.5.0/dist/echarts.min.js"></script>
+</head>
+<body>
+    <div id="container"></div>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            var chartDom = document.getElementById('container');
+            if (!chartDom) {
+                console.error('Container element not found!');
+                return;
+            }
+
+            var myChart = echarts.init(chartDom);
+
+            // 加载中国地图 GeoJSON 文件
+            fetch('./100000_full.json')
+                .then(response => response.json())
+                .then(geoJson => {
+                    // 注册中国地图
+                    echarts.registerMap('china', geoJson);
+
+                    // 数据（使用全称以匹配 GeoJSON）
+                    var dataMap = [
+                        { name: '上海市', value: 1010130 },
+                        { name: '北京市', value: 936375 },
+                        { name: '浙江省', value: 854942 },
+                        { name: '江苏省', value: 720616 },
+                        { name: '广东省', value: 705720 },
+                        { name: '天津市', value: 687183 },
+                        { name: '福建省', value: 659058 },
+                        { name: '重庆市', value: 556586 },
+                        { name: '湖北省', value: 544674 },
+                        { name: '湖南省', value: 528330 },
+                        { name: '山东省', value: 496674 },
+                        { name: '辽宁省', value: 495884 },
+                        { name: '安徽省', value: 494524 },
+                        { name: '四川省', value: 489259 },
+                        { name: '内蒙古自治区', value: 489171 },
+                        { name: '江西省', value: 476228 },
+                        { name: '海南省', value: 471665 },
+                        { name: '河北省', value: 458283 },
+                        { name: '黑龙江省', value: 447796 },
+                        { name: '陕西省', value: 435423 },
+                        { name: '宁夏回族自治区', value: 419804 },
+                        { name: '河南省', value: 417237 },
+                        { name: '云南省', value: 415745 },
+                        { name: '广西壮族自治区', value: 402407 },
+                        { name: '贵州省', value: 393544 },
+                        { name: '新疆维吾尔自治区', value: 393281 },
+                        { name: '吉林省', value: 392644 },
+                        { name: '山西省', value: 384725 },
+                        { name: '甘肃省', value: 383672 },
+                        { name: '青海省', value: 378670 },
+                        { name: '西藏自治区', value: 348505 }
+                    ];
+
+                    var option = {
+                        backgroundColor: '#f0f0f0', // 调整背景为浅灰色
+                        title: {
+                            text: '0-17岁孩子养育成本地图',
+                            left: 'center',
+                            textStyle: {
+                                color: '#333', // 标题颜色调整为深色
+                                fontSize: 20
+                            }
+                        },
+                        tooltip: {
+                            trigger: 'item',
+                            formatter: function(params) {
+                                if (params.data && params.data.value) {
+                                    return `${params.name}<br/>平均养育成本: ¥${params.data.value.toFixed(2)} 元`;
+                                }
+                                return `${params.name}<br/>暂无数据`;
+                            },
+                            textStyle: {
+                                color: '#333' // 提示框文字颜色调整为深色
+                            }
+                        },
+                        visualMap: {
+                            min: 348505,
+                            max: 1010130,
+                            left: '10px',
+                            bottom: '10px',
+                            text: ['高', '低'],
+                            calculable: true,
+                            inRange: {
+                                color: ['#e6f0ff', '#b3d1ff', '#80b3ff', '#4d94ff', '#1a75ff'] // 从浅蓝到深蓝
+                            },
+                            textStyle: {
+                                color: '#333' // 颜色条文字颜色调整为深色
+                            }
+                        },
+                        series: [
+                            {
+                                name: '养育成本',
+                                type: 'map',
+                                map: 'china',
+                                roam: true,
+                                label: {
+                                    show: true,
+                                    color: '#333', // 标签颜色调整为深色
+                                    fontSize: 10
+                                },
+                                itemStyle: {
+                                    normal: {
+                                        areaColor: '#d0d0d0', // 默认区域颜色调整为浅灰色
+                                        borderColor: '#666', // 边框颜色调整为深灰色
+                                        borderWidth: 1
+                                    },
+                                    emphasis: {
+                                        areaColor: '#ffcc00' // 高亮颜色调整为亮黄色
+                                    }
+                                },
+                                data: dataMap
+                            }
+                        ]
+                    };
+
+                    myChart.setOption(option);
+                })
+                .catch(error => {
+                    console.error('加载中国地图 GeoJSON 失败:', error);
+                });
+
+            window.addEventListener('resize', function() {
+                myChart.resize();
+            });
+        });
+    </script>
+</body>
+</html>
